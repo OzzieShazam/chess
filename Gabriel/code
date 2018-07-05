@@ -17,7 +17,7 @@ class Board:
         self.board = [[None]*8 for i in range(8)]
         self.turn = Color.WHITE
         self.board[4][4] = Rook(Color.BLACK, 4, 4)
-        self.board[4][6] = Knight(Color.BLACK, 4, 6)
+        self.board[4][6] = King(Color.BLACK, 4, 6)
     def move(self, x1, y1, x2, y2):
         self.board[x2][y2] = self.board[x1][y1]
         self.board[x1][y1] = None
@@ -96,7 +96,24 @@ class Rook:
             else:
                 break
         return moves
-                
+
+class King:
+    def __init__(self, color, x, y):
+        self.color = color
+        self.x = x
+        self.y = y
+        self.letter = "K" if color == Color.WHITE else "k"
+        
+    def availableMoves(self, board):
+        moves = []
+        x = self.x
+        y = self.y
+        for a,b in [[x-1,y-1],[x-1,y],[x-1,y+1],[x,y-1],[x,y+1],[x+1,y-1],[x+1,y],[x+1,y+1]]:
+            if 0<=a<=7 and 0<=b<=7:
+                moves.append([a,b])
+        return moves
+
 board = Board()
 board.display()
 print(board.board[4][6].availableMoves(board.board))
+
