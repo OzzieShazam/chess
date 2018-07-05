@@ -107,7 +107,7 @@ class King:
         x = self.x
         y = self.y
         for a,b in [[x-1,y-1],[x-1,y],[x-1,y+1],[x,y-1],[x,y+1],[x+1,y-1],[x+1,y],[x+1,y+1]]:
-            if 0<=a<=7 and 0<=b<=7:
+            if 0<=a<=7 and 0<=b<=7 and (board[a][b] == None or board[a][b].color != self.color):
                 moves.append([a,b])
         return moves
 
@@ -177,4 +177,5 @@ class Bishop:
 board = Board()
 board.display()
 #print(board.board[4][6].availableMoves(board.board))
+
 
