@@ -16,8 +16,6 @@ class Board:
     def __init__(self):
         self.board = [[None]*8 for i in range(8)]
         self.turn = Color.WHITE
-        self.board[4][4] = Rook(Color.BLACK, 4, 4)
-        self.board[4][6] = King(Color.BLACK, 4, 6)
     def move(self, x1, y1, x2, y2):
         self.board[x2][y2] = self.board[x1][y1]
         self.board[x1][y1] = None
@@ -113,7 +111,70 @@ class King:
                 moves.append([a,b])
         return moves
 
+class Pawn:
+    def __init__(self, color, x, y):
+        self.color = color
+        self.x = x
+        self.y = y
+        self.letter = 'P' if self.color == Color.WHITE else 'p'
+        
+    def availableMoves(self, board):
+        moves = []
+        if self.color == Color.BLACK:
+            if self.y == 1:
+                moves.append([self.x, self.y + 2])
+            if board[self.x - 1][self.y + 1] != None and board[self.x - 1][self.y + 1].color == Color.WHITE:
+                moves.append([self.x - 1, self.y + 1])
+            if board[self.x + 1][self.y + 1] != None and board[self.x + 1][self.y + 1].color == Color.WHITE:
+                moves.append([self.x - 1, self.y + 1])
+        else:
+            if self.y == 6:
+                moves.append([self.x, self.y - 2])
+            if board[self.x - 1][self.y - 1] != None and board[self.x - 1][self.y - 1].color == Color.BLACK:
+                moves.append(self.x - 1, self.y - 1)
+            if board[self.x + 1][self.y - 1] != None and board[self.x + 1][self.y - 1].color == Color.BLACK:
+                moves.append([self.x + 1, self.y - 1])
+        return moves
+        
+class Bishop:
+    def __init__(self, color, x, y):
+        self.color = color
+        self.x = x
+        self.y = y
+        
+    def availableMoves(self, board):
+        moves = []
+        i = 1
+        while self.x - i >= 0 and self.y - i >= 0:
+            if board[self.x - i][self.y - i] == None or board[self.x - i][self.y - i].color != self.color:
+                moves.append([self.x - i, self.y - i])
+            elif board[self.x - i][self.y - i].color == self.color:
+                break
+            i += 1
+        i = 1
+        while self.x + i <= 7 and self.y - i >= 0:
+            if board[self.x + i][self.y - i] == None or board[self.x + i][self.y - i].color != self.color:
+                moves.append([self.x + i, self.y - i])
+            elif board[self.x + i][self.y - i].color == self.color:
+                break
+            i += 1
+        i = 1
+        while self.x - i >= 0 and self.y + i <= 7:
+            if board[self.x - i][self.y + i] == None or board[self.x - i][self.y + i].color != self.color:
+                moves.append([self.x - i, self.y + i])
+            elif board[self.x - i][self.y + i].color == self.color:
+                break
+            i += 1
+        i = 1
+        while self.x + i <= 7 and self.y + i <= 7:
+            if board[self.x + i][self.y + i] == None or board[self.x + i][self.y + i].color != self.color:
+                moves.append([self.x + i, self.y + i])
+            elif board[self.x + i][self.y + i].color == self.color:
+                break
+            i += 1
+        return moves
+
 board = Board()
 board.display()
-print(board.board[4][6].availableMoves(board.board))
+#print(board.board[4][6].availableMoves(board.board))
 
