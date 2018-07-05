@@ -121,15 +121,19 @@ class Pawn:
     def availableMoves(self, board):
         moves = []
         if self.color == Color.BLACK:
-            if self.y == 1:
-                moves.append([self.x, self.y + 2])
+            if board[self.x][self.y+1] == None:
+                moves.append([self.x, self.y+1])
+                if self.y == 1 and board[self.x][self.y-2] == None:
+                    moves.append([self.x, self.y + 2])
             if board[self.x - 1][self.y + 1] != None and board[self.x - 1][self.y + 1].color == Color.WHITE:
                 moves.append([self.x - 1, self.y + 1])
             if board[self.x + 1][self.y + 1] != None and board[self.x + 1][self.y + 1].color == Color.WHITE:
                 moves.append([self.x - 1, self.y + 1])
         else:
-            if self.y == 6:
-                moves.append([self.x, self.y - 2])
+            if board[self.x][self.y-1] == None:
+                moves.append([self.x, self.y-1])
+                if self.y == 6 and board[self.x][self.y-2] == None:
+                    moves.append([self.x, self.y - 2])
             if board[self.x - 1][self.y - 1] != None and board[self.x - 1][self.y - 1].color == Color.BLACK:
                 moves.append(self.x - 1, self.y - 1)
             if board[self.x + 1][self.y - 1] != None and board[self.x + 1][self.y - 1].color == Color.BLACK:
@@ -141,6 +145,7 @@ class Bishop:
         self.color = color
         self.x = x
         self.y = y
+        self.letter = 'B' if self.color == Color.WHITE else 'b'
         
     def availableMoves(self, board):
         moves = []
@@ -175,7 +180,7 @@ class Bishop:
         return moves
 
 board = Board()
+board.board[5][1] = Pawn(Color.BLACK,5,1)
+print(board.board[5][1].availableMoves(board.board))
 board.display()
-#print(board.board[4][6].availableMoves(board.board))
-
 
