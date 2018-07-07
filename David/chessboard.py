@@ -27,7 +27,7 @@ def updateBoard(boardArray):
             if(boardArray[row][col] == None):
                 Button(screen, foreground=color, background=color, activeforeground=color, activebackground=color, width=6, height=3).grid(row=row,column=col)
             else:
-                path = "images\"Color(boardArray[row][col]) + "_" + Pieces(boardArray[row][col]) + ".png"
+                path = "images\" + Color(boardArray[row][col]) + "_" + Pieces(boardArray[row][col]) + ".png"
                 label = Label(screen)
                 label.img = PhotoImage(file=path).subsample(6)
                 photo = label.img
