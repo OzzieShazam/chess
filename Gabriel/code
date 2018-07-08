@@ -41,6 +41,8 @@ class Board:
             self.board[i][6] = Pawn(Color.WHITE,i,6)
         
     def move(self, x1, y1, x2, y2):
+        if self.board[x1][y1].letter.lower() == "k" or self.board[x1][y1].letter.lower() == "r":
+            self.board[x1][y1].moved = True
         self.board[x2][y2] = self.board[x1][y1]
         self.board[x1][y1] = None
         self.board[x2][y2].x = x2
@@ -83,6 +85,7 @@ class Rook:
         self.x = x
         self.y = y
         self.letter = "R" if color == Color.WHITE else "r"
+        self.moved = False
     
     def availableMoves(self, board):
         moves = []
@@ -128,6 +131,7 @@ class King:
         self.x = x
         self.y = y
         self.letter = "K" if color == Color.WHITE else "k"
+        self.moved = False
         
     def availableMoves(self, board):
         moves = []
@@ -136,6 +140,9 @@ class King:
         for a,b in [[x-1,y-1],[x-1,y],[x-1,y+1],[x,y-1],[x,y+1],[x+1,y-1],[x+1,y],[x+1,y+1]]:
             if 0<=a<=7 and 0<=b<=7 and (board[a][b] == None or board[a][b].color != self.color):
                 moves.append([a,b])
+        if not self.moved:
+            if board[5][7 if self.color == Color.WHITE else 0] == None and board[6][7 if color == Color.WHITE else 0] == None and board[7][7 if self.color == Color.WHITE else 0] != None and board[7][7 if self.color == Color.WHITE else 0].letter.lower() == "r" and not board[7][7 if self.color == Color.WHITE else 0].moved:
+                moves.append([0-0])
         return moves
 
 class Pawn:
@@ -152,18 +159,18 @@ class Pawn:
                 moves.append([self.x, self.y+1])
                 if self.y == 1 and board[self.x][self.y+2] == None:
                     moves.append([self.x, self.y + 2])
-            if board[self.x - 1][self.y + 1] != None and board[self.x - 1][self.y + 1].color == Color.WHITE:
+            if self.x > 0 and board[self.x - 1][self.y + 1] != None and board[self.x - 1][self.y + 1].color == Color.WHITE:
                 moves.append([self.x - 1, self.y + 1])
-            if board[self.x + 1][self.y + 1] != None and board[self.x + 1][self.y + 1].color == Color.WHITE:
+            if self.x < 7 and board[self.x + 1][self.y + 1] != None and board[self.x + 1][self.y + 1].color == Color.WHITE:
                 moves.append([self.x - 1, self.y + 1])
         else:
             if board[self.x][self.y-1] == None:
                 moves.append([self.x, self.y-1])
                 if self.y == 6 and board[self.x][self.y-2] == None:
                     moves.append([self.x, self.y - 2])
-            if board[self.x - 1][self.y - 1] != None and board[self.x - 1][self.y - 1].color == Color.BLACK:
-                moves.append(self.x - 1, self.y - 1)
-            if board[self.x + 1][self.y - 1] != None and board[self.x + 1][self.y - 1].color == Color.BLACK:
+            if self.x > 0 and board[self.x - 1][self.y - 1] != None and board[self.x - 1][self.y - 1].color == Color.BLACK:
+                moves.append([self.x - 1, self.y - 1])
+            if self.x < 7 and board[self.x + 1][self.y - 1] != None and board[self.x + 1][self.y - 1].color == Color.BLACK:
                 moves.append([self.x + 1, self.y - 1])
         return moves
         
@@ -191,7 +198,7 @@ class Bishop:
             if board[self.x + i][self.y - i] == None:
                 moves.append([self.x + i, self.y - i])
             elif board[self.x + i][self.y - i].color != self.color:    
-                moves.append([self.x + i][self.y - i])
+                moves.append([self.x + i, self.y - i])
                 break
             else:
                 break
@@ -314,9 +321,9 @@ class Game():
         sHeight = GetSystemMetrics(1)
         self.root.geometry(str(sWidth)+"x"+str(sHeight))
         self.screen.place(relx=.5, rely=.5, anchor="center")
+        self.buttons = [[None] * 8 for i in range(8)]
         self.initializeBoard();
         self.root.mainloop()
-    
     
     def initializeBoard(self):
         for row in range(0,len(self.board.board),1):
@@ -326,32 +333,37 @@ class Game():
                 else:
                     color = "#ffffff"
                 if(self.board.board[col][row] == None):
-                    Button(self.screen, foreground=color, background=color, activeforeground=color, activebackground=color, width=6, height=3, command= lambda row = row, col = col: self.handleButtonPress(col, row)).grid(row=row,column=col)
+                    b = Button(self.screen, relief=FLAT, foreground=color, background=color, activeforeground=color, activebackground=color, width=6, height=3, command= lambda row = row, col = col: self.handleButtonPress(col, row))
+                    b.grid(row=row,column=col)
                 else:
                     path = "chess\\images\\" + self.board.board[col][row].color.value + "_" + self.board.board[col][row].letter.lower() + ".png"
                     label = Label(self.screen)
                     label.img = PhotoImage(file=path).subsample(6)
                     photo = label.img
-                    Button(self.screen, foreground=color, background=color, activeforeground=color, activebackground=color, width=46, height=50, image=photo, command = lambda row = row, col = col: self.handleButtonPress(col, row)).grid(row=row,column=col)
-
-    def handleButtonPress(self, x, y):
-        print(x, y)
+                    b = Button(self.screen, relief=FLAT, foreground=color, background=color, activeforeground=color, activebackground=color, width=46, height=50, image=photo, command = lambda row = row, col = col: self.handleButtonPress(col, row))
+                    b.grid(row=row,column=col)
+                self.buttons[col][row] = b
+    
+    def updateSquare(self, x, y):
+        label = Label(self.screen)
         if self.board.board[x][y] != None:
-            print(self.board.board[x][y].availableMoves(self.board.board))
+            path = "chess\\images\\" + self.board.board[x][y].color.value + "_" + self.board.board[x][y].letter.lower() + ".png"
+            label.img = PhotoImage(file=path).subsample(6)
+        else:
+            label.img = PhotoImage(file="").subsample(6)
+        photo = label.img
+        self.buttons[x][y].configure(width=46, height=50, image=photo)  
+    def handleButtonPress(self, x, y):
         if len(self.selected)>0 and [x, y] in self.board.board[self.selected[0]][self.selected[1]].availableMoves(self.board.board):
-                self.board.move(self.selected[0], self.selected[1], x, y)
-                self.selected = []
+            self.board.move(self.selected[0], self.selected[1], x, y)
+            self.updateSquare(self.selected[0], self.selected[1])
+            self.updateSquare(x, y)
+            self.selected = []
         elif self.board.board[x][y] != None and self.board.board[x][y].color == self.board.turn:
-                self.selected = [x, y]
+            self.selected = [x, y]
+            
         else:
             self.selected = []
-        self.initializeBoard()
         self.board.display()
                 
 Game()
-'''
-board = Board()
-board.board[5][1] = Bishop(Color.BLACK,5,1)
-print(board.board[5][1].availableMoves(board.board))
-board.display()
-'''
