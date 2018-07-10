@@ -20,6 +20,9 @@ class Board:
     def __init__(self):
         self.board = [[None]*8 for i in range(8)]
         self.turn = Color.WHITE
+        self.inCheck = None
+        self.blackKing = (4,0)
+        self.whiteKing = (4,7)
         self.board[0][0] = Rook(Color.BLACK,0,0)
         self.board[1][0] = Knight(Color.BLACK,1,0)
         self.board[2][0] = Bishop(Color.BLACK,2,0)
@@ -43,6 +46,8 @@ class Board:
     def move(self, x1, y1, x2, y2):
         if self.board[x1][y1].letter.lower() == "k" or self.board[x1][y1].letter.lower() == "r":
             self.board[x1][y1].moved = True
+        if self.board[x1][y1].letter.lower() == "n":
+            #if 
         self.board[x2][y2] = self.board[x1][y1]
         self.board[x1][y1] = None
         self.board[x2][y2].x = x2
@@ -61,7 +66,69 @@ class Board:
             print()
         print()
     
-    #def validMoveByCheck(self, x1, y1, x2, y2):
+    def validMoveByCheck(self, x, y):
+        kingColor = self.board[x][y].color
+        
+        #top check
+        for i in range(1, y):
+            if(self.board[x][y - i] != None and self.board[x][y - i].color == kingColor):
+                break
+            elif(self.board[x][y - i].letter == 'r' if kingColor == Color.WHITE else 'R') or (self.board[x][y - i].letter == 'q' if kingColor == Color.WHITE else 'Q'):
+                return False
+        #bottom check
+        for i in range(1, 7 - y):
+            if(self.board[x][y + i] != None and self.board[x][y + i].color == kingColor):
+                break
+            elif(self.board[x][y + i].letter == 'r' if kingColor == Color.WHITE else 'R') or (self.board[x][y + i].letter == 'q' if kingColor == Color.WHITE else 'Q'):
+                return False
+        #left check
+        for i in range(1, x):
+            if(self.board[x - i][y] != None and self.board[x - i][y].color == kingColor):
+                break
+            elif(self.board[x - i][y].letter == 'r' if kingColor == Color.WHITE else 'R') or (self.board[x - i][y].letter == 'q' if kingColor == Color.WHITE else 'Q'):
+                return False
+        #right check
+        for i in range(1, 7 - x):
+            if(self.board[x + i][y] != None and self.board[x + i][y].color == kingColor):
+                break
+            elif(self.board[x + i][y].letter == 'r' if kingColor == Color.WHITE else 'R') or (self.board[x + i][y].letter == 'q' if kingColor == Color.WHITE else 'Q'):
+                return False
+        #top left check
+        for i in range(1, x if x < y else y):
+            if(self.board[x - i][y - i] != None and self.board[x - i][y - i].color == kingColor):
+                break
+            elif (self.board[x - i][y - i].letter == 'b' if kingColor == Color.WHITE else 'B') or (self.board[x - i][y - i].letter == 'q' if kingColor == Color.WHITE else 'Q'):
+                return False
+            elif kingColor == Color.WHITE and self.board[x - 1][y - 1].letter == 'p':
+                return False
+        #top right check
+        for i in range(1, 7 - x if 7 - x < y else y): 
+            if(self.board[x + i][y - i] != None and self.board[x + i][y - i].color == kingColor):
+                break
+            elif (self.board[x + i][y - i].letter == 'b' if kingColor == Color.WHITE else 'B') or (self.board[x + i][y - i].letter == 'q' if kingColor == Color.WHITE else 'Q'):
+                return False
+            elif kingColor == Color.WHITE and self.board[x + 1][y - 1].letter == 'p':
+                return False
+        #bottom left check
+        for i in range(1, x if x < 7 - y else 7 - y): 
+            if(self.board[x - i][y + i] != None and self.board[x - i][y + i].color == kingColor):
+                break
+            elif (self.board[x - i][y + i].letter == 'b' if kingColor == Color.WHITE else 'B') or (self.board[x - i][y + i].letter == 'q' if kingColor == Color.WHITE else 'Q'):
+                return False
+            elif kingColor == Color.BLACK and self.board[x - 1][y + 1].letter == 'P':
+                return False
+        #bottom right check
+        for i in range(1, 7 - x if x > y else 7 - y): 
+            if(self.board[x + i][y + i] != None and self.board[x + i][y + i].color == kingColor):
+                break
+            elif (self.board[x + i][y + i].letter == 'b' if kingColor == Color.WHITE else 'B') or (self.board[x + i][y + i].letter == 'q' if kingColor == Color.WHITE else 'Q'):
+                return False
+            elif kingColor == Color.BLACK and self.board[x + 1][y + 1].letter == 'P':
+                return False
+        for a,b in [[x-2,y-1],[x-2,y+1],[x-1,y-2],[x-1,y+2],[x+1,y-2],[x+1,y+2],[x+2,y-1],[x+2,y+1]]:
+            if 0<=a<=7 and 0<=b<=7 and (self.board[a][b] != None and self.board[a][b].letter == 'n' if kingColor == Color.WHITE else 'N'):
+                return False
+        return True
     
 class Knight:
     def __init__(self, color, x, y):
@@ -141,6 +208,8 @@ class King:
             if 0<=a<=7 and 0<=b<=7 and (board[a][b] == None or board[a][b].color != self.color):
                 moves.append([a,b])
         if not self.moved:
+            if board[5][7 if self.color == Color.WHITE else 0] == None and board[6][7 if color == Color.WHITE else 0] == None and board[7][7 if self.color == Color.WHITE else 0] != None and board[7][7 if self.color == Color.WHITE else 0].letter.lower() == "r" and not board[7][7 if self.color == Color.WHITE else 0].moved:
+                moves.append([0-0])
             if board[5][7 if self.color == Color.WHITE else 0] == None and board[6][7 if color == Color.WHITE else 0] == None and board[7][7 if self.color == Color.WHITE else 0] != None and board[7][7 if self.color == Color.WHITE else 0].letter.lower() == "r" and not board[7][7 if self.color == Color.WHITE else 0].moved:
                 moves.append([0-0])
         return moves
@@ -367,3 +436,12 @@ class Game():
         self.board.display()
                 
 Game()
+'''
+After each move check if that move gave check
+Available moves do not include moves that keep the king in check
+Always check if the combined available moves is greater than 0
+
+Stalemate: when there are no available moves left to play
+Checkmate: stalemate + check
+
+'''
