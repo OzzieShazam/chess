@@ -18,6 +18,7 @@ class Piece(Enum):
 class Board:
     def __init__(self):
         self.board = [[None]*8 for i in range(9)]
+        self.dots = []
         self.turn = Color.WHITE
         self.inCheck = None
         self.blackKing = [4,0]
