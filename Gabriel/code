@@ -432,7 +432,7 @@ class Game():
             label.img = PhotoImage(file="").subsample(6)
         photo = label.img
         self.buttons[x][y].configure(width=46, height=50, image=photo)  
-        def handleButtonPress(self, x, y):
+    def handleButtonPress(self, x, y):
         grid = self.buttons
         for row in range(len(grid)):
             for col in range(len(grid[row])):
