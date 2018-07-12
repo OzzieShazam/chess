@@ -452,31 +452,25 @@ class Game():
         elif self.board.board[x][y] != None and self.board.board[x][y].color == self.board.turn:
             self.selected = [x, y]
             availableMoves = self.board.board[self.selected[0]][self.selected[1]].availableMoves(self.board.board)
-            grid = self.buttons
-            for row in range(len(grid)):
-                for col in range(len(grid[row])):
-                    color = "#555555" if(row%2==0 and col%2==1) or (row%2==1 and col%2==0) else "#ffffff"
-                    grid[row][col]["background"] = color
-            grid[x][y]["background"] = "#7a997a" #makes piece green 
+            self.buttons[x][y]["background"] = "#7a997a" #makes piece green 
             for spotX,spotY in availableMoves:
                 try:
                     try:
-                        
                         #Space with a piece
                         path = "images\\" + self.board.board[spotX][spotY].color.value + "_" + self.board.board[spotX][spotY].letter.lower() + ".png"
                         imageBack = Image.open(path)
                         imageOver = Image.open('images\\dot.png')
                         imageBack.paste(imageBack, (50,50), imageBack)
-                        tkimage = ImageTk.PhotoImage(imageBack)
-                        #grid[spotX][spotY].configure(image=tkimage)
-                        
+                        tkimage = Label(self.screen)
+                        tkimage.img = PhotoImage(file=imageBack)
+                        self.buttons[spotX][spotY].configure(image=tkimage.img)
                     except AttributeError:
                         #Empty Space
                         label = Label(self.screen)
                         label.img = PhotoImage(file="images\\dot.png").subsample(9)
                         photo = label.img
-                        grid[spotX][spotY].configure(image=photo, width=46, height=50)
-                        self.board.dots.append(grid[spotX][spotY]["image"])
+                        self.buttons[spotX][spotY].configure(image=photo, width=46, height=50)
+                        self.board.dots.append(self.buttons[spotX][spotY]["image"])
                 except IndexError:
                     continue
         else:
