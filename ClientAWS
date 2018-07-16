@@ -531,40 +531,40 @@ Checkmate: stalemate + check
 
 '''
 
-def convert(command, server):
+def convert(command, server, game):
     comm = command.decode()
     if comm[:-1] == "color":
         if comm[-1:] == "w":
-            Game(Color.WHITE, server)
+            game = Game(Color.WHITE, server)
         else:
-            Game(Color.BLACK, server)
+            game = Game(Color.BLACK, server)
     else:
         if len(comm) == 4:
-            self.board.move(int(comm[:1]), int(comm[1:2]), int(comm[-2:-1]), int(comm[-1:]))
-            self.updateSquare(int(comm[:1]), int(comm[1:2]))
-            self.updateSquare(int(comm[-2:-1]), int(comm[-1:]))
+            game.board.move(int(comm[:1]), int(comm[1:2]), int(comm[-2:-1]), int(comm[-1:]))
+            game.updateSquare(int(comm[:1]), int(comm[1:2]))
+            game.updateSquare(int(comm[-2:-1]), int(comm[-1:]))
         elif comm == "1":
-            rank = 0 if self.color == Color.WHITE else 7
-            self.board.move(4, rank, 6, rank, switch=False)
-            self.board.move(7, rank, 5, rank)
-            self.updateSquare(4, rank)
-            self.updateSquare(5, rank)
-            self.updateSquare(6, rank)
-            self.updateSquare(7, rank)
+            rank = 0 if game.color == Color.WHITE else 7
+            game.board.move(4, rank, 6, rank, switch=False)
+            game.board.move(7, rank, 5, rank)
+            game.updateSquare(4, rank)
+            game.updateSquare(5, rank)
+            game.updateSquare(6, rank)
+            game.updateSquare(7, rank)
         elif comm == "2":
-            rank = 0 if self.color == Color.WHITE else 7
-            self.board.move(4, rank, 2, rank, switch=False)
-            self.board.move(0, rank, 3, rank)
-            self.updateSquare(0, rank)
-            self.updateSquare(2, rank)
-            self.updateSquare(3, rank)
-            self.updateSquare(4, rank)
+            rank = 0 if game.color == Color.WHITE else 7
+            game.board.move(4, rank, 2, rank, switch=False)
+            game.board.move(0, rank, 3, rank)
+            game.updateSquare(0, rank)
+            game.updateSquare(2, rank)
+            game.updateSquare(3, rank)
+            game.updateSquare(4, rank)
         else:
-            self.board.move(int(comm[1:2]), int(comm[2:3]), int(comm[3:4]), int(comm[4:5]))
-            self.board.remove(int(comm[3:4]), int(comm[4:5]) + 1 if self.color == Color.BLACK else -1)
-            self.updateSquare(int(comm[1:2]), int(comm[2:3]))
-            self.updateSquare(int(comm[3:4]), int(comm[4:5]))
-            self.updateSquare(int(comm[3:4]), int(comm[4:5]) + 1 if self.color == Color.BLACK else -1)
+            game.board.move(int(comm[1:2]), int(comm[2:3]), int(comm[3:4]), int(comm[4:5]))
+            game.board.remove(int(comm[3:4]), int(comm[4:5]) + 1 if game.color == Color.BLACK else -1)
+            game.updateSquare(int(comm[1:2]), int(comm[2:3]))
+            game.updateSquare(int(comm[3:4]), int(comm[4:5]))
+            game.updateSquare(int(comm[3:4]), int(comm[4:5]) + 1 if game.color == Color.BLACK else -1)
 
 def send(server, command):
     server.send(command.encode())
@@ -576,8 +576,10 @@ def start():
     Port = 9009
     server.connect((IP_address, Port))
     
+    game = None
+    
     while True:
-        convert(server.recv(8), server)
+        convert(server.recv(8), server, game)
     server.close()
 
 start()
