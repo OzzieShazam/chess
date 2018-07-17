@@ -520,19 +520,10 @@ class Game():
                 else:
                     self.buttons[2][self.selected[1]].configure(width=46, height=50, image=photo)
         self.buttons[self.selected[0]][self.selected[1]]["background"] = "#555555" if((self.selected[1]%2==0 and self.selected[0]%2==1) or (self.selected[1]%2==1 and self.selected[0]%2==0)) else "#ffffff"
-        
-'''
-After each move check if that move gave check
-Available moves do not include moves that keep the king in check
-Always check if the combined available moves is greater than 0
 
-Stalemate: when there are no available moves left to play
-Checkmate: stalemate + check
-
-'''
-
-    def convert(command, server):
+    def convert(self, command, server):
         comm = command.decode()
+        print(comm)
         if len(comm) == 4:
             self.board.move(int(comm[:1]), int(comm[1:2]), int(comm[-2:-1]), int(comm[-1:]))
             self.updateSquare(int(comm[:1]), int(comm[1:2]))
@@ -576,7 +567,7 @@ def start():
             game = Game(Color.WHITE, server)
         else:
             game = Game(Color.BLACK, server)
-    else:
+    print(server.recv(8).decode())
     while True:
         game.convert(server.recv(8), server)
     server.close()
